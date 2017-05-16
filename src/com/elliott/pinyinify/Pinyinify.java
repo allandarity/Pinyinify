@@ -23,7 +23,6 @@ public class Pinyinify {
             {'o', 'ō', 'ó', 'ǒ', 'ò'},
             {'u', 'ū', 'ú', 'ǔ', 'ù'},
             {'u', 'ǖ', 'ǘ', 'ǚ', 'ǜ'},
-            {'u', 'ǖ', 'ǘ', 'ǚ', 'ǜ'},
     };
 
     public Pinyinify(String input) {
@@ -94,12 +93,14 @@ public class Pinyinify {
                 return 4;
             case "u":
                 return 5;
+            case "v":
+                return 6;
         }
         return 0;
     }
 
     public static void main(String[] args) {
-        new Pinyinify("Ni2 jiao4 shenme2 mingzi2");
+        new Pinyinify("Ni2 jiao4 shenme2 mingzi2 nv3");
     }
 
 }
