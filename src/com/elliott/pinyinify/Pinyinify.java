@@ -10,13 +10,7 @@ import java.util.regex.Pattern;
  */
 public class Pinyinify {
 
-    ArrayList<String> sentence = new ArrayList<>();
-    String vowel;
-    int tone;
-    boolean found = false;
-
-    char[][] charTone = {
-            {'f'},
+    private char[][] charTone = {
             {'a', 'ā', 'á', 'ǎ', 'à'},
             {'e', 'ē', 'é', 'ě', 'è'},
             {'i', 'ī', 'í', 'ǐ', 'ì'},
@@ -25,47 +19,46 @@ public class Pinyinify {
             {'u', 'ǖ', 'ǘ', 'ǚ', 'ǜ'},
     };
 
-    public Pinyinify(String input) {
+    private Pinyinify(String input) {
         String[] splitInput = input.split(" ");
+        ArrayList<String> sentence = new ArrayList<>();
         sentence.addAll(Arrays.asList(splitInput));
-        for(String s : sentence) {
-            System.out.print(addTone(s)+" ");
-        }
-
+        for (String s : sentence) System.out.print(addTone(s) + " ");
     }
 
-    String addTone(String word) {
-        found = false;
+    public static void main(String[] args) {
+        new Pinyinify("Ni3 jiao4 shenme2 mingzi2 nv3 ma");
+    }
+
+    private String addTone(String word) {
+        boolean found = false;
         StringBuilder sb = new StringBuilder();
-            String[] wordArray = word.split("");
-            for (int i = 0; i < wordArray.length; i++) {
-                if(!found) {
-                    if ((wordArray[i].equals(vowelTone(word)))) {
-                        this.vowel = wordArray[i];
-                        this.tone = getTone(word);
-                        sb.append(charTone[getVowelPlace(vowel)][tone]);
-                        found = true;
-                        continue;
-                    }
-                }
-                if (wordArray[i].matches("[0-9]+")) {
+        String[] splitString = word.split("");
+        for (String current : splitString) {
+            if (!found) {
+                if ((current.equals(vowelTone(word)))) {
+                    int tone = getTone(word);
+                    sb.append(charTone[getVowelPlace(current)][tone]);
+                    found = true;
                     continue;
                 }
-                sb.append(wordArray[i]);
             }
+            if (current.matches("[0-9]+")) continue;
+            sb.append(current);
+        }
         return sb.toString();
     }
 
-    String vowelTone(String input) {
-        String[] wordArray = input.split("");
-        for(int i=0; i<wordArray.length; i++) {
-            if ((wordArray[i].equals("a")) || (wordArray[i].equals("e"))) {
-                return wordArray[i].equals("a") ? "a" : "e";
+    private String vowelTone(String input) {
+        String[] splitString = input.split("");
+        for (int i = 0; i < splitString.length; i++) {
+            if ((splitString[i].equals("a")) || (splitString[i].equals("e"))) {
+                return splitString[i].equals("a") ? "a" : "e";
             }
-            if ((wordArray[i].equals("o")) || (wordArray[i].equals("u"))) {
-                return wordArray[i].equals("o") ? "o" : "u";
+            if ((splitString[i].equals("o")) || (splitString[i].equals("u"))) {
+                return splitString[i].equals("o") ? "o" : "u";
             }
-            if(i == wordArray.length-1) {
+            if (i == splitString.length - 1) {
                 Pattern pattern = Pattern.compile(".*([aeiouvü])", Pattern.CASE_INSENSITIVE);
                 Matcher matcher = pattern.matcher(input);
                 if (matcher.find()) {
@@ -73,34 +66,36 @@ public class Pinyinify {
                 }
             }
         }
-        return "no";
+        return "";
     }
 
-    int getTone(String word) {
+    private int getTone(String word) {
         String[] wordList = word.split("");
-        return Integer.valueOf(wordList[word.length()-1]);
-    }
-
-    int getVowelPlace(String vowel) {
-        switch(vowel) {
-            case "a":
-                return 1;
-            case "e":
-                return 2;
-            case "i":
-                return 3;
-            case "o":
-                return 4;
-            case "u":
-                return 5;
-            case "v":
-                return 6;
+        try {
+            Integer.parseInt(wordList[word.length() - 1]);
+        } catch (NumberFormatException e) {
+            return 0;
         }
-        return 0;
+        return Integer.valueOf(wordList[word.length() - 1]);
     }
 
-    public static void main(String[] args) {
-        new Pinyinify("Ni2 jiao4 shenme2 mingzi2 nv3");
+    private int getVowelPlace(String vowel) {
+        switch (vowel) {
+            case "a":
+                return 0;
+            case "e":
+                return 1;
+            case "i":
+                return 2;
+            case "o":
+                return 3;
+            case "u":
+                return 4;
+            case "v":
+                return 5;
+            default:
+                return -1;
+        }
     }
 
 }
