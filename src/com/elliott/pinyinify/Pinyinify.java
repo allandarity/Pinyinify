@@ -1,7 +1,7 @@
 package com.elliott.pinyinify;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,20 +10,18 @@ import java.util.regex.Pattern;
  */
 public class Pinyinify {
 
-    private char[][] charTone = {
-            {'a', 'ā', 'á', 'ǎ', 'à'},
-            {'e', 'ē', 'é', 'ě', 'è'},
-            {'i', 'ī', 'í', 'ǐ', 'ì'},
-            {'o', 'ō', 'ó', 'ǒ', 'ò'},
-            {'u', 'ū', 'ú', 'ǔ', 'ù'},
-            {'u', 'ǖ', 'ǘ', 'ǚ', 'ǜ'},
-    };
+    private Map<String, Characters> chz = new HashMap<>(Map.of(
+            "a", new Characters(new ArrayList<>(Arrays.asList("ā", "á", "ǎ", "à"))),
+            "e", new Characters(new ArrayList<>(Arrays.asList("ē", "é", "ě", "è"))),
+            "i", new Characters(new ArrayList<>(Arrays.asList("ī", "í", "ǐ", "ì"))),
+            "o", new Characters(new ArrayList<>(Arrays.asList("ō", "ó", "ǒ", "ò"))),
+            "u", new Characters(new ArrayList<>(Arrays.asList("ū", "ú", "ǔ", "ù"))),
+            "v", new Characters(new ArrayList<>(Arrays.asList("ǖ", "ǘ", "ǚ", "ǜ")))
+    ));
 
     private Pinyinify(String input) {
-        String[] splitInput = input.split(" ");
-        ArrayList<String> sentence = new ArrayList<>();
-        sentence.addAll(Arrays.asList(splitInput));
-        for (String s : sentence) System.out.print(addTone(s) + " ");
+        ArrayList<String> sentence = new ArrayList<>(Arrays.asList(input.split(" ")));
+        sentence.forEach((String word) -> System.out.println(addTone(word)));
     }
 
     public static void main(String[] args) {
@@ -33,21 +31,35 @@ public class Pinyinify {
     private String addTone(String word) {
         boolean found = false;
         StringBuilder sb = new StringBuilder();
-        String[] splitString = word.split("");
-        for (String current : splitString) {
-            if (!found) {
-                if ((current.equals(vowelTone(word)))) {
-                    int tone = getTone(word);
-                    sb.append(charTone[getVowelPlace(current)][tone]);
-                    found = true;
-                    continue;
-                }
+        List<String> split = new ArrayList<>(Arrays.asList(word.split("")));
+        for (String current : split) {
+            int tone = getTone(word)-1;
+            if(tone == -1) continue;
+            if ((!found) && (current.equals(vowelTone(word)))) {
+                sb.append(chz.get(current).getVariants().get(tone));
+                found = true;
+                continue;
             }
             if (current.matches("[0-9]+")) continue;
             sb.append(current);
         }
         return sb.toString();
     }
+
+//    private String addTone(String word) {
+//        StringBuilder sb = new StringBuilder();
+//        List<String> split = new ArrayList<>(Arrays.asList(word.split("")));
+//        split.stream().filter(vowel -> charTone).findFirst();
+//        split.forEach(ch -> {
+//           if(ch.equals(vowelTone(word))) {
+//               int tone = getTone(word);
+//               sb.append(charTone[getVowelPlace(ch)][tone]);
+//           } else {
+//               sb.append(ch);
+//           }
+//        });
+//        return sb.toString();
+//    }
 
     private String vowelTone(String input) {
         String[] splitString = input.split("");
