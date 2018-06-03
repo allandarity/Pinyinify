@@ -1,23 +1,47 @@
 package com.elliott.pinyinify;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.IntStream;
 
-public class Sentence {
+class Sentence {
 
     private final String sent;
-    List<String> words;
 
-    public Sentence(String sent) {
+    private Map<String, Tones> chz = new HashMap<>(Map.of(
+            "a", new Tones(new ArrayList<>(Arrays.asList(" ", "ā", "á", "ǎ", "à"))),
+            "e", new Tones(new ArrayList<>(Arrays.asList(" ", "ē", "é", "ě", "è"))),
+            "i", new Tones(new ArrayList<>(Arrays.asList(" ", "ī", "í", "ǐ", "ì"))),
+            "o", new Tones(new ArrayList<>(Arrays.asList(" ", "ō", "ó", "ǒ", "ò"))),
+            "u", new Tones(new ArrayList<>(Arrays.asList(" ", "ū", "ú", "ǔ", "ù"))),
+            "v", new Tones(new ArrayList<>(Arrays.asList(" ", "ǖ", "ǘ", "ǚ", "ǜ")))
+    ));
+
+    private Map<Integer, Word> words;
+    private StringBuilder sb;
+
+    Sentence(String sent) {
         this.sent = sent;
-        this.words = new ArrayList<>(Arrays.asList(sent.split(" ")));
+        this.words = new LinkedHashMap<>();
+        this.replace();
+        this.rebuild();
     }
 
-    public String returnLetter(String toSearch) {
-        return "";
+    void replace() {
+        String[] split = sent.split(" ");
+        IntStream.range(0, split.length).forEach(i -> words.putIfAbsent(i, new Word(split[i])));
     }
 
+    void rebuild() {
+        sb = new StringBuilder();
+        words.forEach((k, v) -> {
+            sb.append(v.replaceWord(chz)).append(" ");
+        });
+    }
+
+    @Override
+    public String toString() {
+        return sb.toString().trim();
+    }
 
 
 }

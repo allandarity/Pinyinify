@@ -3,16 +3,16 @@ package com.elliott.pinyinify;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Characters {
+public class Tones {
 
     private List<String> variants;
 
-    Characters(ArrayList<String> variants) {
+    Tones(ArrayList<String> variants) {
         this.variants = new ArrayList<>(variants);
     }
 
     public List<String> getVariants() {
-        return this.variants;
+        return variants;
     }
 
 }
